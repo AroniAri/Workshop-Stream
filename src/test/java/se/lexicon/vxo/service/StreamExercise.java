@@ -155,9 +155,11 @@ public class StreamExercise {
         int expectedSize = 892;
         LocalDate date = LocalDate.parse("1920-01-01");
 
-        List<PersonDto> dtoList = null;
-         people.stream().filter(person -> person.getDateOfBirth().isBefore(date))
-                         .map(person -> new PersonDto(person.getPersonId(), person.getFirstName(),p))
+        List<PersonDto> dtoList =
+
+          people.stream().filter(person -> person.getDateOfBirth().isBefore(date))
+                         .map(person -> new PersonDto(person.getPersonId(), person.getFirstName() + " " + person.getLastName()))
+                                 .collect(Collectors.toList());
 
 
 
@@ -175,9 +177,13 @@ public class StreamExercise {
         String expected = "WEDNESDAY 19 DECEMBER 2012";
         int personId = 5914;
 
-        Optional<String> optional = null;
+        Optional<String> optional = people.stream()
+                        .filter(person -> person.getPersonId() == personId)
+                        .map(Person ::getDateOfBirth)
+                        .map(localDate -> localDate.getDayOfWeek() + " " + localDate.getDayOfMonth() + " " + localDate.getMonth() + " " + localDate.getYear())
+                        .findFirst();
 
-        //TODO:Write code here
+
 
         assertNotNull(optional);
         assertTrue(optional.isPresent());
@@ -195,7 +201,11 @@ public class StreamExercise {
         double expected = 54.42;
         double averageAge = 0;
 
-        //TODO:Write code here
+         averageAge = people.stream()
+                 .mapToInt(personToAge)
+                 .average()
+                 .orElse(0);
+
 
         assertTrue(averageAge > 0);
         assertEquals(expected, averageAge, .01);
@@ -210,7 +220,12 @@ public class StreamExercise {
 
         String[] result = null;
 
-        //TODO:Write code here
+        result = people.stream()
+                        .map(Person::getFirstName)
+                        .filter(name -> name.equalsIgnoreCase(new StringBuilder(name).reverse().toString()))
+                        .distinct()
+                        .sorted()
+                        .toArray(String[]::new);
 
         assertNotNull(result);
         assertArrayEquals(expected, result);
